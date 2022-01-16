@@ -13,6 +13,9 @@ migrateup:
 migratedown:
 	migrate -path ./db/schema -database "postgresql://root:root@localhost:5432/go-bank?sslmode=disable" -verbose down
 
+gen-sqlc:
+	sqlc generate
+
 
 
 .PHONY: postgres createdb dropdb migrateup migratedown
