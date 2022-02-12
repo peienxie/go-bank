@@ -102,15 +102,15 @@ func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferT
 // transferMoney transfer given amount of money from account to the other account
 func transferMoney(ctx context.Context, q *Queries, from_id, to_id, amount int64) (from, to Account, err error) {
 	from, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-		ID:      from_id,
-		Balance: -amount,
+		ID:     from_id,
+		Amount: -amount,
 	})
 	if err != nil {
 		return
 	}
 	to, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-		ID:      to_id,
-		Balance: amount,
+		ID:     to_id,
+		Amount: amount,
 	})
 	return
 }

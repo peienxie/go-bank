@@ -107,8 +107,8 @@ func TestAddAccountBalance(t *testing.T) {
 	account1 := createRandomAccount(t)
 
 	arg := AddAccountBalanceParams{
-		ID:      account1.ID,
-		Balance: randomMoney(),
+		ID:     account1.ID,
+		Amount: randomMoney(),
 	}
 
 	account2, err := testQueries.AddAccountBalance(context.Background(), arg)
@@ -117,7 +117,7 @@ func TestAddAccountBalance(t *testing.T) {
 
 	assert.Equal(t, account1.ID, account2.ID)
 	assert.Equal(t, account1.Username, account2.Username)
-	assert.Equal(t, account1.Balance+arg.Balance, account2.Balance)
+	assert.Equal(t, account1.Balance+arg.Amount, account2.Balance)
 	assert.Equal(t, account1.Currency, account2.Currency)
 	assert.Equal(t, account1.CreatedAt, account2.CreatedAt)
 }
