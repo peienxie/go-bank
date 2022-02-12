@@ -86,24 +86,31 @@ func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferT
 			return err
 		}
 
-		result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:      arg.FromAccountID,
-			Balance: -arg.Amount,
-		})
-		if err != nil {
-			return err
+		// always perform transaction with lowest id first
+		if arg.FromAccountID < arg.ToAccountID {
+			result.FromAccount, result.ToAccount, err = transferMoney(ctx, q, arg.FromAccountID, arg.ToAccountID, arg.Amount)
+		} else {
+			result.ToAccount, result.FromAccount, err = transferMoney(ctx, q, arg.ToAccountID, arg.FromAccountID, -arg.Amount)
 		}
 
-		result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-			ID:      arg.ToAccountID,
-			Balance: arg.Amount,
-		})
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return err
 	})
 
 	return result, err
+}
+
+// transferMoney transfer given amount of money from account to the other account
+func transferMoney(ctx context.Context, q *Queries, from_id, to_id, amount int64) (from, to Account, err error) {
+	from, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		ID:      from_id,
+		Balance: -amount,
+	})
+	if err != nil {
+		return
+	}
+	to, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		ID:      to_id,
+		Balance: amount,
+	})
+	return
 }

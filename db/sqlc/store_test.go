@@ -96,3 +96,37 @@ func TestTransferTx(t *testing.T) {
 	assert.Equal(t, toAccount.Balance+amount*int64(n), updatedToAccount.Balance)
 	fmt.Printf("After: from: %d, to: %d\n", updatedFromAccount.Balance, updatedToAccount.Balance)
 }
+
+// TestTransferTxDeadlock makes sure deadlock does not occur
+func TestTransferTxDeadlock(t *testing.T) {
+	fromAccount := createRandomAccount(t)
+	toAccount := createRandomAccount(t)
+
+	n := 10
+	amount := int64(10)
+	errChan := make(chan error)
+
+	for i := 0; i < n; i++ {
+		go func(i int) {
+			var id1, id2 int64
+			if i%2 == 0 {
+				id1, id2 = fromAccount.ID, toAccount.ID
+			} else {
+				id2, id1 = fromAccount.ID, toAccount.ID
+			}
+			_, err := testStore.TransferTx(
+				context.Background(),
+				TransferTxParams{
+					FromAccountID: id1,
+					ToAccountID:   id2,
+					Amount:        amount,
+				})
+			errChan <- err
+		}(i)
+	}
+
+	for i := 0; i < n; i++ {
+		err := <-errChan
+		assert.NoError(t, err)
+	}
+}
