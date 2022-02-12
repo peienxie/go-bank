@@ -56,32 +56,25 @@ func TestListTransfers(t *testing.T) {
 		context.Background(),
 		ListTransfersParams{Limit: math.MaxInt32, Offset: 0},
 	)
+	assert.NotEmpty(t, allTransfers)
 	assert.NoError(t, err)
 	total := len(allTransfers)
 
+	count := 10
 	var newTransfers []Transfer
-	for i := 0; i < 10; i++ {
+	for i := 0; i < count; i++ {
 		newTransfers = append(
 			newTransfers,
 			createRandomTransfer(t, createRandomAccount(t), createRandomAccount(t)),
 		)
 	}
-
-	offset := total
-	entries, err := testQueries.ListTransfers(
+	transfers, err := testQueries.ListTransfers(
 		context.Background(),
-		ListTransfersParams{Limit: 10, Offset: int32(offset)},
+		ListTransfersParams{Limit: math.MaxInt32, Offset: 0},
 	)
-	assert.NotEmpty(t, entries)
+	assert.NotEmpty(t, transfers)
 	assert.NoError(t, err)
-	assert.Len(t, entries, 10)
-	for i := range entries {
-		assert.Equal(t, entries[i].ID, newTransfers[i].ID)
-		assert.Equal(t, entries[i].FromAccountID, newTransfers[i].FromAccountID)
-		assert.Equal(t, entries[i].ToAccountID, newTransfers[i].ToAccountID)
-		assert.Equal(t, entries[i].Amount, newTransfers[i].Amount)
-		assert.Equal(t, entries[i].CreatedAt, newTransfers[i].CreatedAt)
-	}
+	assert.GreaterOrEqual(t, len(transfers)-count, total)
 }
 
 // TestDeleteTransfer makes sure delete transfer record by given ID

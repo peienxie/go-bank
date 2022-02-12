@@ -57,29 +57,25 @@ func TestListAaccount(t *testing.T) {
 		context.Background(),
 		ListAccountsParams{Limit: math.MaxInt32, Offset: 0},
 	)
+	assert.NotEmpty(t, allAccounts)
 	assert.NoError(t, err)
 	total := len(allAccounts)
 
+	count := 10
 	var newAccounts []Account
-	for i := 0; i < 10; i++ {
-		newAccounts = append(newAccounts, createRandomAccount(t))
+	for i := 0; i < count; i++ {
+		newAccounts = append(
+			newAccounts,
+			createRandomAccount(t),
+		)
 	}
-
-	offset := total
 	accounts, err := testQueries.ListAccounts(
 		context.Background(),
-		ListAccountsParams{Limit: 10, Offset: int32(offset)},
+		ListAccountsParams{Limit: math.MaxInt32, Offset: 0},
 	)
 	assert.NotEmpty(t, accounts)
 	assert.NoError(t, err)
-	assert.Len(t, accounts, 10)
-	for i := range accounts {
-		assert.Equal(t, accounts[i].ID, newAccounts[i].ID)
-		assert.Equal(t, accounts[i].Username, newAccounts[i].Username)
-		assert.Equal(t, accounts[i].Balance, newAccounts[i].Balance)
-		assert.Equal(t, accounts[i].Currency, newAccounts[i].Currency)
-		assert.Equal(t, accounts[i].CreatedAt, newAccounts[i].CreatedAt)
-	}
+	assert.GreaterOrEqual(t, len(accounts)-count, total)
 }
 
 // TestUpdateAccountBalance makes sure update account amount of balance by given ID

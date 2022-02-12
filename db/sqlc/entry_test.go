@@ -53,32 +53,25 @@ func TestListEntries(t *testing.T) {
 		context.Background(),
 		ListEntriesParams{Limit: math.MaxInt32, Offset: 0},
 	)
+	assert.NotEmpty(t, allEntries)
 	assert.NoError(t, err)
 	total := len(allEntries)
 
+	count := 10
 	var newEntries []Entry
-	for i := 0; i < 10; i++ {
+	for i := 0; i < count; i++ {
 		newEntries = append(
 			newEntries,
 			createRandomEntry(t, createRandomAccount(t)),
 		)
 	}
-
-	offset := total
-	length := 10
 	entries, err := testQueries.ListEntries(
 		context.Background(),
-		ListEntriesParams{Limit: int32(length), Offset: int32(offset)},
+		ListEntriesParams{Limit: math.MaxInt32, Offset: 0},
 	)
 	assert.NotEmpty(t, entries)
 	assert.NoError(t, err)
-	assert.Len(t, entries, length)
-	for i := range entries {
-		assert.Equal(t, entries[i].ID, newEntries[i].ID)
-		assert.Equal(t, entries[i].AccountID, newEntries[i].AccountID)
-		assert.Equal(t, entries[i].Amount, newEntries[i].Amount)
-		assert.Equal(t, entries[i].CreatedAt, newEntries[i].CreatedAt)
-	}
+	assert.GreaterOrEqual(t, len(entries)-count, total)
 }
 
 // TestDeleteEntry makes sure delete entry record by given ID
