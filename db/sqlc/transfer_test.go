@@ -61,12 +61,8 @@ func TestListTransfers(t *testing.T) {
 	total := len(allTransfers)
 
 	count := 10
-	var newTransfers []Transfer
 	for i := 0; i < count; i++ {
-		newTransfers = append(
-			newTransfers,
-			createRandomTransfer(t, createRandomAccount(t), createRandomAccount(t)),
-		)
+		createRandomTransfer(t, createRandomAccount(t), createRandomAccount(t))
 	}
 	transfers, err := testQueries.ListTransfers(
 		context.Background(),

@@ -61,11 +61,7 @@ func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferT
 
 	err := s.execTx(ctx, func(q *Queries) error {
 		var err error
-		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
-			FromAccountID: arg.FromAccountID,
-			ToAccountID:   arg.ToAccountID,
-			Amount:        arg.Amount,
-		})
+		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams(arg))
 		if err != nil {
 			return err
 		}

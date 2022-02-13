@@ -58,12 +58,8 @@ func TestListEntries(t *testing.T) {
 	total := len(allEntries)
 
 	count := 10
-	var newEntries []Entry
 	for i := 0; i < count; i++ {
-		newEntries = append(
-			newEntries,
-			createRandomEntry(t, createRandomAccount(t)),
-		)
+		createRandomEntry(t, createRandomAccount(t))
 	}
 	entries, err := testQueries.ListEntries(
 		context.Background(),

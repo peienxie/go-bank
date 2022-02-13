@@ -62,12 +62,8 @@ func TestListAaccount(t *testing.T) {
 	total := len(allAccounts)
 
 	count := 10
-	var newAccounts []Account
 	for i := 0; i < count; i++ {
-		newAccounts = append(
-			newAccounts,
-			createRandomAccount(t),
-		)
+		createRandomAccount(t)
 	}
 	accounts, err := testQueries.ListAccounts(
 		context.Background(),
