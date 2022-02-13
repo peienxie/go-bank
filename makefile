@@ -19,7 +19,12 @@ gen-sqlc:
 test:
 	go test ./... -v -cover
 
+lint:
+	golangci-lint run
+
+server:
+	go run main.go
 
 
-.PHONY: postgres createdb dropdb migrateup migratedown gen-sqlc test
+.PHONY: postgres createdb dropdb migrateup migratedown gen-sqlc test lint server
 
