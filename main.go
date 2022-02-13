@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store := db.NewStore(conn)
+	store := db.NewSQLStore(conn)
 	server := api.NewServer(store)
 
 	if err = server.Serve(":8080"); err != nil {

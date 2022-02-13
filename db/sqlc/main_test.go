@@ -10,7 +10,7 @@ import (
 )
 
 var testQueries *Queries
-var testStore *Store
+var testStore *SQLStore
 
 func TestMain(m *testing.M) {
 	conn, err := sql.Open("postgres", "postgresql://root:root@localhost:5432/go-bank?sslmode=disable")
@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 	}
 
 	testQueries = New(conn)
-	testStore = NewStore(conn)
+	testStore = NewSQLStore(conn)
 
 	os.Exit(m.Run())
 }
