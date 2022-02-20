@@ -20,6 +20,7 @@ func NewServer(store db.Store) *Server {
 
 	// initilizes routing
 	server.initAccountRoutes()
+	server.initTransferRoutes()
 
 	return server
 }
