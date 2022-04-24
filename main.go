@@ -6,23 +6,24 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/peienxie/go-bank/api"
+	"github.com/peienxie/go-bank/config"
 	db "github.com/peienxie/go-bank/db/sqlc"
 )
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:root@localhost:5432/go-bank?sslmode=disable"
-)
-
 func main() {
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal(err)
 	}
 	store := db.NewSQLStore(conn)
 	server := api.NewServer(store)
 
-	if err = server.Serve(":8080"); err != nil {
+	if err = server.Serve(config.ServerAddress); err != nil {
 		log.Fatal(err)
 	}
 }
