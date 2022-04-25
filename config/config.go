@@ -36,7 +36,10 @@ func LoadConfig(path string) (config Config, err error) {
 			return config, fmt.Errorf("read config err: %w", err)
 		}
 	}
-	bindEnvs(v, config)
+	err = bindEnvs(v, config)
+	if err != nil {
+		return config, fmt.Errorf("bind environment variables err: %w", err)
+	}
 
 	// workaround because viper does not treat env vars the same as other config
 	for _, key := range v.AllKeys() {
@@ -53,7 +56,7 @@ func LoadConfig(path string) (config Config, err error) {
 }
 
 // https://github.com/spf13/viper/issues/188
-func bindEnvs(v *viper.Viper, iface interface{}, parts ...string) {
+func bindEnvs(v *viper.Viper, iface interface{}, parts ...string) error {
 	ifValue := reflect.ValueOf(iface)
 	ifType := reflect.TypeOf(iface)
 	for i := 0; i < ifType.NumField(); i++ {
@@ -63,11 +66,16 @@ func bindEnvs(v *viper.Viper, iface interface{}, parts ...string) {
 		if !ok {
 			continue
 		}
+		var err error
 		switch valueField.Kind() {
 		case reflect.Struct:
-			bindEnvs(v, valueField.Interface(), append(parts, tagValue)...)
+			err = bindEnvs(v, valueField.Interface(), append(parts, tagValue)...)
 		default:
-			v.BindEnv(strings.Join(append(parts, tagValue), "."))
+			err = v.BindEnv(strings.Join(append(parts, tagValue), "."))
+		}
+		if err != nil {
+			return err
 		}
 	}
+	return nil
 }

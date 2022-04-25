@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createDefaultEnvFile() {
+func createDefaultEnvFile(t *testing.T) {
 	// create default app.env in current folder
 	envs := make(map[string]string)
 	envs["DB_SOURCE"] = "default_source"
@@ -21,15 +21,17 @@ func createDefaultEnvFile() {
 		envString += fmt.Sprintf("%s=%s\n", k, v)
 	}
 
-	os.WriteFile("app.env", []byte(envString), 0644)
+	err := os.WriteFile("app.env", []byte(envString), 0644)
+	assert.NoError(t, err)
 }
 
-func cleanupEnvFile() {
-	os.Remove("app.env")
+func cleanupEnvFile(t *testing.T) {
+	err := os.Remove("app.env")
+	assert.NoError(t, err)
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
-	createDefaultEnvFile()
+	createDefaultEnvFile(t)
 
 	config, err := config.LoadConfig(".")
 	assert.NoError(t, err)
@@ -39,7 +41,7 @@ func TestLoadDefaultConfig(t *testing.T) {
 	assert.Equal(t, "default_source", config.DBSource)
 	assert.Equal(t, "default_address", config.ServerAddress)
 
-	cleanupEnvFile()
+	cleanupEnvFile(t)
 }
 
 func TestOverrideConfigByEnvironmentVariables(t *testing.T) {
