@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=go-bank
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - GOBANK_DB_DRIVER=postgres
+      - GOBANK_DB_SOURCE=postgresql://root:root@postgres:5432/go-bank?sslmode=disable
+      - GOBANK_SERVER_ADDRESS=:8080
+    depends_on:
+      - postgres
+
